@@ -1,19 +1,47 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TextInput,Button } from 'react-native';
+import HeaderSection from './app/components/Header'
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
-  );
+export default class App extends React.Component {
+  
+  render(){
+    return (
+      <View style={styles.container}>
+        <HeaderSection title="Title" />
+        <View style={styles.form}>
+          <Text>Email</Text>
+          <TextInput style={styles.input} placeholder={"Digite seu email"} />
+          <Text>Senha</Text>
+          <TextInput style={styles.input} placeholder={"Digite seu email"} />
+          <Button title="Cadastrar" style={{width:"100%"}}></Button>
+        </View>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: 'flex',
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
+  input:{
+    width:"100%",
+    height:40,
+    borderWidth:1,
+    borderColor:"#B1B1B1",
+    borderRadius:8,
+    backgroundColor:"#FCF8F6",
+    padding: 12,
+    marginTop:12,
+    marginBottom: 12,
+  },
+  form:{
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'flex-start',
+    alignItems:'flex-start',
+    padding:10
+
+  }
 });
