@@ -2,15 +2,37 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput,Button, ScrollView } from 'react-native';
 import HeaderSection from "../components/Header";
 import CardMessage from '../components/Message';
+import { FirebaseInit } from '../utils/firebase';
 
 export default class chatScreen extends Component {
-  constructor(props) {
+  constructor(props) 
+  {
     super(props);
-   }
+    this.state = {
+      message: ""
+    };
+  }
 
   static navigationOptions = {title:"Chat"}
 
-  render() {
+  addMessage = (message) => {
+    if(!message) {
+      alert("Digite alguma coisa antes de enviar")
+      return
+    }
+
+    let nodeMessages = FirebaseInit.database().ref('Messages/')
+    var newMessage = nodeMessages.push()
+
+    newMessage
+      .set({ message: this.state.message })
+      .then(() => alert("Você enviou uma mensagem!"))
+      .catch(error => alert("Ops! :( \n ", error));
+
+  }   
+
+  render() 
+  {
     return (
       <View style={styles.container}>
         <HeaderSection title="Chat" />
@@ -22,8 +44,9 @@ export default class chatScreen extends Component {
             <TextInput
               style={styles.input}
               placeholder={"Digite sua mensagem"}
+              onChangeText={value => this.setState({ message: value })}
             ></TextInput>
-            <Button title={"Enviar"} />
+            <Button title={"Enviar"} onPress={() => this.addMessage(this.state.message)} />
           </View>
         </View>
       </View>
