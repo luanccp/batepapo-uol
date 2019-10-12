@@ -1,13 +1,38 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput,Button } from 'react-native';
 import HeaderSection from "../components/Header";
+import { FirebaseInit } from '../utils/firebase';
 
 export default class registerScreen extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      email: '',
+      password: '',
+    }
    }
 
   static navigationOptions = {title:"Register"}
+
+  register = (email, password) => {
+    if (!email) {
+      alert("Preencha o campo de email abaixo.")
+      return
+    }
+    if (!password) {
+      alert("Preencha o campo de senha abaixo.")
+      return
+    }
+    try{
+      FirebaseInit.auth().createUserWithEmailAndPassword(email, password);
+      alert("Usuário cadastrado")
+      this.props.navigation.navigate('Login')
+    }
+    catch(error){
+      alert(error.toString(error))
+    }
+  }   
+
 
   render() {
     return (
@@ -15,10 +40,22 @@ export default class registerScreen extends Component {
         <HeaderSection title="Register" />
         <View style={styles.form}>
           <Text>Email</Text>
-          <TextInput style={styles.input} placeholder={"Digite seu email"} />
+          <TextInput
+            style={styles.input}
+            placeholder={"Digite seu email"}
+            onChangeText={value => this.setState({ email: value })}
+          />
           <Text>Senha</Text>
-          <TextInput style={styles.input} placeholder={"Digite seu email"} />
-          <Button title="Cadastrar" style={{ width: "100%" }} onPress={()=> this.props.navigation.navigate("Login")}></Button>
+          <TextInput
+            style={styles.input}
+            placeholder={"Digite sua senha"}
+            onChangeText={value => this.setState({ password: value })}
+          />
+          <Button
+            title="Cadastrar"
+            style={{ width: "100%" }}
+            onPress={() => this.register(this.state.email, this.state.password)}
+          />
         </View>
       </View>
     );
