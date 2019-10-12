@@ -56,6 +56,10 @@ export default class registerScreen extends Component {
             style={{ width: "100%" }}
             onPress={() => this.register(this.state.email, this.state.password)}
           />
+          <Button
+            title="Ja tenho login"
+            onPress={() => this.props.navigation.navigate('Login')}
+          />
         </View>
       </View>
     );
