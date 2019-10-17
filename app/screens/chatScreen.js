@@ -1,44 +1,70 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput,Button, ScrollView } from 'react-native';
+import React, { Component } from "react";
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  Button,
+  ScrollView
+} from "react-native";
 import HeaderSection from "../components/Header";
-import CardMessage from '../components/Message';
-import { FirebaseInit } from '../utils/firebase';
+import CardMessage from "../components/Message";
+import { FirebaseInit } from "../utils/firebase";
+import FirebaseService from "../services/FirebaseService";
 
 export default class chatScreen extends Component {
-  constructor(props) 
-  {
+  constructor(props) {
     super(props);
-    this.state = {
-      message: ""
-    };
   }
+  state = {
+    message: "",
+    allMessages: [],
+    userEmail: ""
+  };
 
-  static navigationOptions = {title:"Chat"}
-
-  addMessage = (message) => {
-    if(!message) {
-      alert("Digite alguma coisa antes de enviar")
-      return
+  componentDidMount()
+  {
+    FirebaseInit.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.setState({ userEmail: user.email });
+      } else {
+        console.log("DEU MERDA");
+      }
+    });
+    FirebaseService.getDataList(
+      "Messages",
+      dataIn => this.setState({ allMessages: dataIn }),
+      100
+    );
+  }
+  static navigationOptions = { title: "Chat" };
+  
+  addMessage = message => {
+    if (!message) {
+      alert("Digite alguma coisa antes de enviar");
+      return;
     }
-
-    let nodeMessages = FirebaseInit.database().ref('Messages/')
-    var newMessage = nodeMessages.push()
-
+    
+    let nodeMessages = FirebaseInit.database().ref("Messages/");
+    var newMessage = nodeMessages.push();
+    
     newMessage
-      .set({ message: this.state.message })
+      .set({ message: this.state.message, author: this.state.userEmail })
       .then(() => alert("Você enviou uma mensagem!"))
       .catch(error => alert("Ops! :( \n ", error));
-
-  }   
-
-  render() 
-  {
+    };
+    
+    render() {
+    const { allMessages } = this.state;
     return (
       <View style={styles.container}>
         <HeaderSection title="Chat" />
         <View style={styles.content}>
           <ScrollView style={styles.chat}>
-            <CardMessage name={"Luan"} message={"Minha primeira messagem"} />
+            {!!allMessages.length && allMessages
+              ? allMessages.map(data => (
+                  <CardMessage name={data.author} message={data.message} />
+                ))
+              : null}
           </ScrollView>
           <View style={styles.sendMessageBox}>
             <TextInput
@@ -46,7 +72,10 @@ export default class chatScreen extends Component {
               placeholder={"Digite sua mensagem"}
               onChangeText={value => this.setState({ message: value })}
             ></TextInput>
-            <Button title={"Enviar"} onPress={() => this.addMessage(this.state.message)} />
+            <Button
+              title={"Enviar"}
+              onPress={() => this.addMessage(this.state.message)}
+            />
           </View>
         </View>
       </View>
@@ -96,4 +125,3 @@ const styles = StyleSheet.create({
     alignItems: "center"
   }
 });
-  

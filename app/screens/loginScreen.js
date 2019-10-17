@@ -26,8 +26,10 @@ export default class loginScreen extends Component {
     }
     try {
       FirebaseInit.auth().signInWithEmailAndPassword(email, password)
-      alert("Login aceito, você vai ser redirecionado")
-      this.props.navigation.navigate('Chat')
+      .then(()=>{
+        this.props.navigation.navigate('Chat')
+        alert("Login aceito, você vai ser redirecionado")
+      })
     } catch (error) 
     {
       alert(error.toString(error));
